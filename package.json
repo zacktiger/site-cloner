@@ -1,0 +1,12 @@
+{
+  "name": "site-cloner",
+  "private": true,
+  "scripts": {
+    "setup": "npm install && npm install --prefix server && npm install --prefix web && npm install --prefix preview && npx --prefix server playwright install chromium",
+    "dev": "concurrently -k -n preview,server,web -c magenta,blue,green \"npm run dev --prefix preview\" \"npm run dev --prefix server\" \"npm run dev --prefix web\"",
+    "typecheck": "npm run typecheck --prefix server && npm run typecheck --prefix web"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
