@@ -8,12 +8,23 @@ import { CSS_HEADER, siteDir } from "./files.js";
 // so the model only writes components, and fewer things can go wrong.
 
 const escapeHtml = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
-const fontStack = (font: string, fallback: string) => `"${font.replace(/["\\;{}]/g, "")}", ${fallback}`;
+const fontStack = (font: string, fallback: string) => `"${cleanFont(font)}", ${fallback}`;
+
+// Sites often use the variable build of a font ("Inter Variable", "Inter VF"). Google Fonts
+// only knows the family name, so that suffix is removed ("Playfair Display" stays as it is).
+function cleanFont(font: string) {
+  const name = (font || "")
+    .replace(/["\\;{}]/g, "")
+    .replace(/\b(variable|vf)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return name || "Inter";
+}
 
 function googleFontsUrl(spec: SiteSpec) {
-  const families = [...new Set([spec.theme.headingFont, spec.theme.bodyFont])]
-    .filter(Boolean)
-    .map((f) => `family=${encodeURIComponent(f.trim()).replace(/%20/g, "+")}:wght@300;400;500;600;700;800`);
+  const families = [...new Set([spec.theme.headingFont, spec.theme.bodyFont].map(cleanFont))].map(
+    (f) => `family=${encodeURIComponent(f).replace(/%20/g, "+")}:wght@300;400;500;600;700;800`,
+  );
   return `https://fonts.googleapis.com/css2?${families.join("&")}&display=swap`;
 }
 
