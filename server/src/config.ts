@@ -18,7 +18,7 @@ export const DATA_DIR = path.join(ROOT, "data");
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 // Tried in order when the main model is overloaded (HTTP 503/429).
-export const GEMINI_FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-3.5-flash,gemini-2.5-flash,gemini-3.5-flash-lite")
+export const GEMINI_FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-3.5-flash,gemini-2.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite")
   .split(",")
   .map((m) => m.trim())
   .filter(Boolean);
@@ -33,6 +33,7 @@ export const PRICES: Record<string, { input: number; output: number }> = {
   "gemini-3.7-flash": { input: 0.75, output: 3.75 },
   "gemini-3.5-flash": { input: 1.5, output: 9.0 },
   "gemini-3.5-flash-lite": { input: 0.3, output: 2.5 },
+  "gemini-3.1-flash-lite": { input: 0.25, output: 1.5 },
   "gemini-3.1-pro-preview": { input: 2.0, output: 12.0 },
   "gemini-2.5-pro": { input: 1.25, output: 10.0 },
   "gemini-2.5-flash": { input: 0.3, output: 2.5 },
