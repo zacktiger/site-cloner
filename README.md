@@ -8,6 +8,8 @@ shows a live preview (desktop, tablet, mobile), and edits the result from plain-
 The output is new code, not an embedded copy: every section of the original becomes its own React
 component, styled with Tailwind and driven by a shared theme.
 
+**Demo video (5 min):** [watch on Google Drive](https://drive.google.com/file/d/1nYNTG0u8G7EmwW7l2PPDgbLZMt23_yYQ/view?usp=sharing)
+
 ## Setup
 
 Requirements: Node.js 20+ and a Gemini API key ([get one here](https://aistudio.google.com/apikey)).
