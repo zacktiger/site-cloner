@@ -37,28 +37,9 @@ token usage, undo snapshots) is in `data/<site-id>/`.
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    URL([Website URL]) --> C
+![How the agent works: URL, analysis, generation, validation, modification](docs/architecture.png)
 
-    subgraph Agent ["Agent (server/src/agent)"]
-        C["1. Capture<br/>Playwright: desktop + mobile screenshots,<br/>DOM outline, colors, fonts, image URLs"]
-        A["2. Analyze<br/>Gemini + JSON schema:<br/>theme tokens + list of sections"]
-        S["Scaffold<br/>index.html, main.tsx, theme CSS<br/>(no AI)"]
-        G["3. Generate<br/>Gemini writes App.tsx +<br/>one component per section"]
-        V{"4. Validate<br/>tsc type check +<br/>headless render check"}
-        F["Fix<br/>missing imports in code,<br/>the rest by Gemini"]
-        R["5. Visual review<br/>screenshot the clone,<br/>compare with original,<br/>Gemini fixes differences"]
-        C --> A --> S --> G --> V
-        V -- errors, max 2 rounds --> F --> V
-        V -- clean --> R
-        R -- re-validate, roll back if broken --> V
-    end
-
-    R --> P([Live preview<br/>desktop / tablet / mobile])
-    P --> M["6. Modify<br/>snapshot → Gemini edits files<br/>→ validate/fix → roll back if broken"]
-    M --> V
-```
+(Vector version: [docs/architecture.svg](docs/architecture.svg).)
 
 **1. Capture** (`capture.ts`, `extract-dom.js`, no AI). Headless Chromium opens the page twice, at
 desktop size and at phone size. It scrolls through to trigger lazy loading and takes screenshots.

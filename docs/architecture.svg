@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 930" width="1600" height="930" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#5B6475"/>
+  </marker>
+</defs>
+<rect width="1600" height="930" fill="#FFFFFF"/>
+<text x="40" y="42" font-size="22" font-weight="700" fill="#1C2330" text-anchor="start" >Site Cloner: how the agent works</text>
+<text x="40" y="62" font-size="13" font-weight="400" fill="#5B6475" text-anchor="start" >From a public URL to a validated React + Tailwind clone that can be edited with prompts</text>
+<rect x="960" y="30" width="18" height="14" rx="3" fill="#EAF0FE" stroke="#2F5BEA" stroke-width="1.5"/>
+<text x="986" y="42" font-size="12" font-weight="400" fill="#5B6475" text-anchor="start" >Gemini call</text>
+<rect x="1084.6" y="30" width="18" height="14" rx="3" fill="#FFFFFF" stroke="#B8C0CC" stroke-width="1.5"/>
+<text x="1110.6" y="42" font-size="12" font-weight="400" fill="#5B6475" text-anchor="start" >Plain code, no AI</text>
+<rect x="1248.8" y="30" width="18" height="14" rx="3" fill="#FFF6E5" stroke="#B7791F" stroke-width="1.5"/>
+<text x="1274.8" y="42" font-size="12" font-weight="400" fill="#5B6475" text-anchor="start" >Automatic check</text>
+<rect x="1399.8" y="30" width="26" height="14" rx="7" fill="#FFFFFF" stroke="#5B6475" stroke-dasharray="4 3"/>
+<text x="1433.8" y="42" font-size="12" font-weight="400" fill="#5B6475" text-anchor="start" >Output</text>
+<rect x="40" y="78" width="170" height="572" rx="14" fill="#F3F5F8"/>
+<text x="56" y="108" font-size="16" font-weight="700" fill="#1C2330" text-anchor="start" >URL</text>
+<rect x="226" y="78" width="320" height="572" rx="14" fill="#F3F5F8"/>
+<text x="242" y="108" font-size="16" font-weight="700" fill="#1C2330" text-anchor="start" >Analysis</text>
+<rect x="562" y="78" width="320" height="572" rx="14" fill="#F3F5F8"/>
+<text x="578" y="108" font-size="16" font-weight="700" fill="#1C2330" text-anchor="start" >Generation</text>
+<rect x="898" y="78" width="320" height="572" rx="14" fill="#F3F5F8"/>
+<text x="914" y="108" font-size="16" font-weight="700" fill="#1C2330" text-anchor="start" >Validation</text>
+<rect x="1234" y="78" width="320" height="572" rx="14" fill="#F3F5F8"/>
+<text x="1250" y="108" font-size="16" font-weight="700" fill="#1C2330" text-anchor="start" >Modification</text>
+<rect x="56" y="175" width="138" height="50" rx="25" fill="#1C2330"/>
+<text x="125" y="205" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle" >Website URL</text>
+<text x="125" y="250" font-size="12" font-weight="400" fill="#5B6475" text-anchor="middle" font-family="Consolas, monospace">POST /api/sites</text>
+<text x="125" y="270" font-size="12" font-weight="400" fill="#5B6475" text-anchor="middle" >job runs in the</text>
+<text x="125" y="288" font-size="12" font-weight="400" fill="#5B6475" text-anchor="middle" >background</text>
+<path d="M 194 200 L 240 200" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="242" y="130" width="288" height="140" rx="10" fill="#FFFFFF" stroke="#B8C0CC" stroke-width="1.5"/>
+<text x="256" y="156" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >1  Capture</text>
+<rect x="439.0" y="141" width="79.0" height="21" rx="10.5" fill="#E6E9EE"/>
+<text x="478.5" y="156" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >Playwright</text>
+<text x="256" y="180" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Desktop + phone, lazy content loaded</text>
+<text x="256" y="199" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >4 desktop slices + 1 mobile screenshot</text>
+<text x="256" y="218" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >DOM → outline: 500 KB → ~15 KB</text>
+<text x="256" y="237" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Measured colors, fonts, image URLs</text>
+<path d="M 386 270 L 386 308" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="242" y="310" width="288" height="130" rx="10" fill="#EAF0FE" stroke="#2F5BEA" stroke-width="1.5"/>
+<text x="256" y="336" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >2  Analyze</text>
+<rect x="464.2" y="321" width="53.8" height="21" rx="10.5" fill="#2F5BEA"/>
+<text x="491.1" y="336" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle" >Gemini</text>
+<text x="256" y="360" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Reads screenshots + outline</text>
+<text x="256" y="379" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >JSON schema: theme tokens (8 colors,</text>
+<text x="256" y="398" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >2 fonts) and every section with its</text>
+<text x="256" y="417" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >layout, content and mobile behavior</text>
+<path d="M 386 440 L 386 468" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="258" y="470" width="256" height="36" rx="18.0" fill="#FFFFFF" stroke="#5B6475" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="386.0" y="492.5" font-size="12.5" font-weight="600" fill="#1C2330" text-anchor="middle" >SiteSpec: the plan (JSON)</text>
+<path d="M 530 375 L 554 375 L 554 185 L 576 185" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="578" y="130" width="288" height="110" rx="10" fill="#FFFFFF" stroke="#B8C0CC" stroke-width="1.5"/>
+<text x="592" y="156" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >Scaffold</text>
+<rect x="806.5" y="141" width="47.5" height="21" rx="10.5" fill="#E6E9EE"/>
+<text x="830.25" y="156" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >no AI</text>
+<text x="592" y="180" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >index.html with Google Fonts link</text>
+<text x="592" y="199" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >main.tsx (the model can&#x27;t touch it)</text>
+<text x="592" y="218" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >index.css: tokens → bg-primary, …</text>
+<path d="M 722 240 L 722 278" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="578" y="280" width="288" height="150" rx="10" fill="#EAF0FE" stroke="#2F5BEA" stroke-width="1.5"/>
+<text x="592" y="306" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >3  Generate</text>
+<rect x="800.2" y="291" width="53.8" height="21" rx="10.5" fill="#2F5BEA"/>
+<text x="827.1" y="306" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle" >Gemini</text>
+<text x="592" y="330" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >App.tsx + one component per section</text>
+<text x="592" y="349" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Shared pieces in components/ui/</text>
+<text x="592" y="368" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Tailwind only; react + lucide-react</text>
+<text x="592" y="387" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Exact text and image URLs from capture</text>
+<text x="592" y="406" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Answers in &lt;file&gt; blocks, not JSON</text>
+<path d="M 722 430 L 722 468" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="594" y="470" width="256" height="36" rx="18.0" fill="#FFFFFF" stroke="#5B6475" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="722.0" y="492.5" font-size="12.5" font-weight="600" fill="#1C2330" text-anchor="middle" >preview/sites/&lt;id&gt;/src/*.tsx</text>
+<path d="M 866 355 L 890 355 L 890 190 L 912 190" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="914" y="130" width="288" height="120" rx="10" fill="#FFF6E5" stroke="#B7791F" stroke-width="1.5"/>
+<text x="928" y="156" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >4  Validate</text>
+<rect x="1142.5" y="141" width="47.5" height="21" rx="10.5" fill="#B7791F"/>
+<text x="1166.25" y="156" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle" >no AI</text>
+<text x="928" y="180" font-size="12.5" font-weight="400" fill="#1C2330" text-anchor="start" >Theme CSS intact, then tsc --noEmit</text>
+<text x="928" y="199" font-size="12.5" font-weight="400" fill="#1C2330" text-anchor="start" >Headless render: crash, blank page,</text>
+<text x="928" y="218" font-size="12.5" font-weight="400" fill="#1C2330" text-anchor="start" >broken images, Vite compile errors</text>
+<rect x="962" y="282" width="240" height="92" rx="10" fill="#EAF0FE" stroke="#2F5BEA" stroke-width="1.5"/>
+<text x="976" y="308" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >Fix</text>
+<rect x="1066.9" y="293" width="123.1" height="21" rx="10.5" fill="#2F5BEA"/>
+<text x="1128.45" y="308" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle" >code, then Gemini</text>
+<text x="976" y="332" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Missing imports fixed in code</text>
+<text x="976" y="351" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >The rest → Gemini, max 2 rounds</text>
+<path d="M 1040 250 L 1040 280" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<text x="1046" y="270" font-size="11" font-weight="600" fill="#5B6475" text-anchor="start" >errors</text>
+<path d="M 1160 282 L 1160 252" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<text x="1154" y="270" font-size="11" font-weight="600" fill="#5B6475" text-anchor="end" >re-check</text>
+<path d="M 932 250 L 932 408" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<text x="948" y="330" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" transform="rotate(-90 948 330)">pass</text>
+<rect x="914" y="410" width="288" height="130" rx="10" fill="#EAF0FE" stroke="#2F5BEA" stroke-width="1.5"/>
+<text x="928" y="436" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >5  Visual review</text>
+<rect x="1136.2" y="421" width="53.8" height="21" rx="10.5" fill="#2F5BEA"/>
+<text x="1163.1" y="436" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle" >Gemini</text>
+<text x="928" y="460" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Screenshots the clone the same way</text>
+<text x="928" y="479" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Compares with the original, fixes</text>
+<text x="928" y="498" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >overlaps, sections, layout, colors</text>
+<text x="928" y="517" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Rolled back if it breaks validation</text>
+<path d="M 1058 540 L 1058 568" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="930" y="570" width="256" height="40" rx="20.0" fill="#FFFFFF" stroke="#5B6475" stroke-width="1.2"/>
+<text x="1058.0" y="594.5" font-size="12.5" font-weight="600" fill="#1C2330" text-anchor="middle" >Live preview: desktop · tablet · mobile</text>
+<path d="M 1186 590 L 1248 590" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="1250" y="130" width="288" height="100" rx="10" fill="#FFFFFF" stroke="#B8C0CC" stroke-width="1.5"/>
+<text x="1264" y="156" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >Undo</text>
+<rect x="1478.5" y="141" width="47.5" height="21" rx="10.5" fill="#E6E9EE"/>
+<text x="1502.25" y="156" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >no AI</text>
+<text x="1264" y="180" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Restores the snapshot taken before</text>
+<text x="1264" y="199" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >the last applied change</text>
+<rect x="1250" y="312" width="288" height="176" rx="10" fill="#EAF0FE" stroke="#2F5BEA" stroke-width="1.5"/>
+<text x="1264" y="338" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >6  Modify</text>
+<rect x="1472.2" y="323" width="53.8" height="21" rx="10.5" fill="#2F5BEA"/>
+<text x="1499.1" y="338" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle" >Gemini</text>
+<text x="1264" y="362" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Snapshot the site first</text>
+<text x="1264" y="381" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Model returns only the changed files</text>
+<text x="1264" y="400" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >(new primary color = one line in</text>
+<text x="1264" y="419" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >index.css; new section = new file)</text>
+<text x="1264" y="438" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Same validate / fix loop</text>
+<text x="1264" y="457" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Still broken → automatic roll back</text>
+<path d="M 1394 312 L 1394 232" fill="none" stroke="#5B6475" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#head)"/>
+<text x="1400" y="276" font-size="11" font-weight="600" fill="#5B6475" text-anchor="start" >snapshots</text>
+<rect x="1266" y="570" width="256" height="40" rx="20.0" fill="#FFFFFF" stroke="#5B6475" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="1394.0" y="594.5" font-size="12.5" font-weight="600" fill="#1C2330" text-anchor="middle" font-style="italic">“Make the navbar sticky”</text>
+<path d="M 1394 570 L 1394 490" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M 1250 400 L 1226 400 L 1226 214 L 1204 214" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<text x="1242" y="310" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" transform="rotate(-90 1242 310)">re-validate</text>
+<text x="40" y="694" font-size="16" font-weight="700" fill="#1C2330" text-anchor="start" >How it runs (all local)</text>
+<rect x="40" y="730" width="300" height="120" rx="10" fill="#FFFFFF" stroke="#B8C0CC" stroke-width="1.5"/>
+<text x="54" y="756" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >Web UI</text>
+<rect x="230.10000000000002" y="741" width="97.89999999999999" height="21" rx="10.5" fill="#E6E9EE"/>
+<text x="279.05" y="756" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >React · :5173</text>
+<text x="54" y="780" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Paste a URL, follow the steps,</text>
+<text x="54" y="799" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >preview, compare, read the plan</text>
+<text x="54" y="818" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >and code, prompt edits, undo</text>
+<rect x="400" y="730" width="340" height="120" rx="10" fill="#FFFFFF" stroke="#B8C0CC" stroke-width="1.5"/>
+<text x="414" y="756" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >Agent server</text>
+<rect x="617.5" y="741" width="110.5" height="21" rx="10.5" fill="#E6E9EE"/>
+<text x="672.75" y="756" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >Express · :3001</text>
+<text x="414" y="780" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Runs the pipeline above as a</text>
+<text x="414" y="799" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >background job; state lives in</text>
+<text x="414" y="818" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >data/&lt;id&gt;/meta.json + snapshots</text>
+<rect x="800" y="730" width="340" height="120" rx="10" fill="#FFFFFF" stroke="#B8C0CC" stroke-width="1.5"/>
+<text x="814" y="756" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >Preview server</text>
+<rect x="1036.4" y="741" width="91.6" height="21" rx="10.5" fill="#E6E9EE"/>
+<text x="1082.2" y="756" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >Vite · :5174</text>
+<text x="814" y="780" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >One dev server hosts every clone</text>
+<text x="814" y="799" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >at /&lt;id&gt;/ with shared node_modules;</text>
+<text x="814" y="818" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >hot reload shows edits live</text>
+<rect x="1200" y="730" width="354" height="120" rx="10" fill="#FFFFFF" stroke="#B8C0CC" stroke-width="1.5"/>
+<text x="1214" y="756" font-size="15" font-weight="700" fill="#1C2330" text-anchor="start" >Gemini (llm.ts)</text>
+<rect x="1425.2" y="741" width="116.8" height="21" rx="10.5" fill="#E6E9EE"/>
+<text x="1483.6" y="756" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >gemini-3.8-flash</text>
+<text x="1214" y="780" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >Streaming, retries on 503/429,</text>
+<text x="1214" y="799" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >fallback 3.8 → 3.5 → 2.5 → Flash-Lite,</text>
+<text x="1214" y="818" font-size="12.5" font-weight="400" fill="#5B6475" text-anchor="start" >tokens and cost logged per call</text>
+<path d="M 340 790 L 398 790" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M 398 800 L 342 800" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<text x="369" y="782" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >API</text>
+<path d="M 740 790 L 798 790" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<text x="769" y="782" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >files</text>
+<path d="M 570 730 L 570 714 L 1377 714 L 1377 728" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="851.2" y="706" width="247.6" height="17" fill="#FFFFFF"/>
+<text x="975" y="718" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >prompts + screenshots → code and plans</text>
+<path d="M 190 850 L 190 880 L 970 880 L 970 852" fill="none" stroke="#5B6475" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="477.9" y="872" width="204.20000000000002" height="17" fill="#FFFFFF"/>
+<text x="580" y="884" font-size="11" font-weight="600" fill="#5B6475" text-anchor="middle" >iframe shows the generated site</text>
+</svg>
