@@ -177,11 +177,18 @@
       childDepth = depth + 1;
     }
 
-    // Long repeated lists (logos, links, cards) are cut to the first 8 items.
+    // Long repeated lists (logos, links, cards) are cut to the first 8 items. The images of
+    // the hidden items are still listed, so the model never has to invent their URLs.
     const shown = visibleChildren.slice(0, 8);
     for (const child of shown) walk(child, childDepth, info.bg, r);
     if (visibleChildren.length > shown.length) {
-      push(`${"  ".repeat(childDepth)}... ${visibleChildren.length - shown.length} more similar items`);
+      const hiddenImages = visibleChildren
+        .slice(shown.length)
+        .flatMap((c) => [...c.querySelectorAll("img")])
+        .map((img) => asset(img.currentSrc || img.src, img.alt, img.getBoundingClientRect()))
+        .filter(Boolean);
+      const imageNote = hiddenImages.length ? ` (their images: ${hiddenImages.join(", ")})` : "";
+      push(`${"  ".repeat(childDepth)}... ${visibleChildren.length - shown.length} more similar items${imageNote}`);
     }
   }
 

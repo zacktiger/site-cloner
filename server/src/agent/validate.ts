@@ -55,6 +55,17 @@ async function renderCheck(id: string): Promise<string[]> {
       `document.querySelector("vite-error-overlay")?.shadowRoot?.querySelector(".window")?.textContent ?? ""`,
     )) as string;
     if (overlay) errors.push(`Vite error: ${overlay.replaceAll(`/sites/${id}/`, "").slice(0, 1500)}`);
+    // Images that finished loading with no pixels: an invented URL, or the original site
+    // blocks hotlinking. Either way the clone would show a broken-image icon.
+    const broken = (await page.evaluate(
+      `[...document.images].filter((i) => i.complete && i.naturalWidth === 0 && i.src).map((i) => i.src)`,
+    )) as string[];
+    if (broken.length) {
+      errors.push(
+        `${broken.length} image(s) failed to load. Use only URLs from the image list, or replace the image with text or an icon:\n` +
+          [...new Set(broken)].slice(0, 10).join("\n"),
+      );
+    }
     const rootChildren = (await page.evaluate(`document.getElementById("root")?.children.length ?? 0`)) as number;
     if (rootChildren === 0 && errors.length === 0) errors.push("The page rendered nothing: #root is empty");
   } catch (e) {

@@ -46,7 +46,10 @@ export async function generateCode(job: Job, capture: Capture, shots: Screenshot
 export async function fixErrors(job: Job, errors: string[]) {
   const all = readSourceFiles(job.id);
   const errorText = errors.join("\n");
-  const named = all.filter((f) => f.path === "src/App.tsx" || errorText.includes(f.path));
+  const urls = errorText.match(/https?:\/\/\S+/g) ?? [];
+  const named = all.filter(
+    (f) => f.path === "src/App.tsx" || errorText.includes(f.path) || urls.some((u) => f.content.includes(u)),
+  );
   const context = named.length > 1 ? named : all;
 
   const text = await callModel(job, {
