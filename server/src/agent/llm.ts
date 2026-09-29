@@ -46,15 +46,24 @@ function retryReason(err: unknown): string | null {
   return null;
 }
 
-// Gemini errors carry a JSON body; turn it into one readable sentence.
+// Gemini errors carry a JSON body (sometimes JSON inside JSON); turn it into one readable sentence.
 function describeError(err: unknown): string {
   if (!(err instanceof Error)) return String(err);
-  try {
-    const body = JSON.parse(err.message);
-    return `Gemini error ${body.error.code}: ${body.error.message}`;
-  } catch {
-    return err.message;
+  let message = err.message;
+  let status = "";
+  for (let depth = 0; depth < 3; depth++) {
+    try {
+      const body = JSON.parse(message);
+      status = body.error?.status ?? status;
+      message = body.error?.message ?? message;
+    } catch {
+      break;
+    }
   }
+  const firstLine = message.split("\n")[0].slice(0, 300);
+  if (status === "RESOURCE_EXHAUSTED") return `Gemini quota exceeded: ${firstLine}`;
+  if (status === "UNAVAILABLE") return `Gemini is overloaded right now: ${firstLine}`;
+  return `Gemini error: ${firstLine}`;
 }
 
 export async function callModel(job: Job, req: LlmRequest): Promise<string> {
@@ -72,6 +81,8 @@ export async function callModel(job: Job, req: LlmRequest): Promise<string> {
         lastError = err;
         const reason = retryReason(err);
         if (!reason) throw new Error(describeError(err));
+        // Out of quota (429): waiting a few seconds will not help, go to the next model now.
+        if (err instanceof ApiError && err.status === 429) break;
         if (attempt < ATTEMPTS_PER_MODEL) {
           const wait = 3000 * 2 ** (attempt - 1); // 3s, 6s
           job.log(`${model} failed (${reason}), retrying in ${wait / 1000}s`);
@@ -81,7 +92,7 @@ export async function callModel(job: Job, req: LlmRequest): Promise<string> {
     }
     overloadedUntil.set(model, Date.now() + COOLDOWN_MS);
     const next = models[models.indexOf(model) + 1];
-    if (next) job.log(`${model} is overloaded, switching to ${next}`);
+    if (next) job.log(`${model} is unavailable (${describeError(lastError).slice(0, 80)}), switching to ${next}`);
   }
   throw new Error(describeError(lastError));
 }

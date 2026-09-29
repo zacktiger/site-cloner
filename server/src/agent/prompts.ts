@@ -6,7 +6,7 @@ const PROJECT_RULES = `The project is a Vite + React 19 + TypeScript app styled 
 - src/index.css holds the Tailwind setup and the theme tokens in an @theme block. Theme classes available:
   colors: primary, secondary, accent, background, surface, foreground, muted, border (e.g. bg-primary, text-muted, border-border, bg-surface/50)
   fonts: font-heading, font-body
-- The only packages installed are react and lucide-react (icons). Import nothing else.
+- The only packages installed are react and lucide-react (icons). Import nothing else: no clsx, tailwind-merge, framer-motion or other helpers. Join class names with template strings.
 - Import every icon and component you use. lucide-react has no brand logos (no GitHub, Twitter, YouTube, LinkedIn, Facebook or Instagram icons); use Globe, Mail, Link or plain text instead.
 - Each component is a default export in its own file under src/components/. Small shared pieces (Button, Container, SectionHeading, ...) go in src/components/ui/ and are reused.
 - Use relative imports without file extensions, e.g. import Hero from "./components/Hero".

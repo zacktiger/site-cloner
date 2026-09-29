@@ -18,7 +18,7 @@ export const DATA_DIR = path.join(ROOT, "data");
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 // Tried in order when the main model is overloaded (HTTP 503/429).
-export const GEMINI_FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-3.5-flash,gemini-2.5-flash")
+export const GEMINI_FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-3.5-flash,gemini-2.5-flash,gemini-3.5-flash-lite")
   .split(",")
   .map((m) => m.trim())
   .filter(Boolean);

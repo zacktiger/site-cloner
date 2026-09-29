@@ -42,7 +42,13 @@ async function validateAndFix(job: Job, showStages = true): Promise<boolean> {
     if (attempt >= MAX_FIX_ATTEMPTS) return false;
     if (showStages) job.stage("fix");
     job.log(`Asking the model to fix them (attempt ${attempt + 1}/${MAX_FIX_ATTEMPTS})`);
-    await fixErrors(job, errors);
+    try {
+      await fixErrors(job, errors);
+    } catch (e) {
+      // The site exists and mostly works; a failed fix call should not throw it away.
+      job.log(`The fix step failed: ${message(e)}`);
+      return false;
+    }
   }
 }
 
