@@ -1,8 +1,9 @@
+import fs from "node:fs";
 import express from "express";
 import { DATA_DIR, GEMINI_API_KEY, GEMINI_MODEL, PORT, PREVIEW_URL } from "./config.js";
-import { readSourceFiles, restore } from "./agent/files.js";
+import { readSourceFiles, restore, siteDir } from "./agent/files.js";
 import { runClone, runModify, undoLastChange } from "./agent/pipeline.js";
-import { createMeta, listMetas, readMeta, updateMeta } from "./store.js";
+import { createMeta, listMetas, readMeta, siteDataDir, updateMeta } from "./store.js";
 
 // HTTP API used by the web UI. Long jobs (clone, modify) run in the background;
 // the UI polls GET /api/sites/:id to follow their progress.
@@ -64,6 +65,15 @@ app.post("/api/sites/:id/undo", (req, res) => {
   } catch (e) {
     res.status(400).json({ error: (e as Error).message });
   }
+});
+
+app.delete("/api/sites/:id", (req, res) => {
+  const meta = readMeta(req.params.id);
+  if (!meta) return res.status(404).json({ error: "Site not found" });
+  if (meta.status === "running") return res.status(409).json({ error: "The agent is still working on this site" });
+  fs.rmSync(siteDir(meta.id), { recursive: true, force: true });
+  fs.rmSync(siteDataDir(meta.id), { recursive: true, force: true });
+  res.json({ ok: true });
 });
 
 function normalizeUrl(input: string): string | null {

@@ -2,11 +2,13 @@ import { useState } from "react";
 import type { SiteMeta } from "../api";
 import AnalysisView from "./AnalysisView";
 import CodeView from "./CodeView";
+import ScaledFrame from "./ScaledFrame";
 
 type Tab = "preview" | "compare" | "analysis" | "code";
 type Device = "desktop" | "tablet" | "mobile";
 
-const WIDTHS: Record<Device, string> = { desktop: "100%", tablet: "768px", mobile: "390px" };
+// The width each device is rendered at. The frame is scaled down when the panel is narrower.
+const WIDTHS: Record<Device, number> = { desktop: 1440, tablet: 768, mobile: 390 };
 const TABS: { id: Tab; label: string }[] = [
   { id: "preview", label: "Preview" },
   { id: "compare", label: "Compare with original" },
@@ -25,8 +27,8 @@ export default function SiteView({ site, previewUrl }: { site: SiteMeta; preview
   const frameKey = `${site.status}-${site.changes.map((c) => c.status).join()}-${reloads}`;
 
   const frame = (
-    <div className="device" style={{ width: WIDTHS[device] }}>
-      <iframe key={frameKey} src={src} title="Generated site preview" />
+    <div className="device" style={{ maxWidth: device === "desktop" ? "100%" : WIDTHS[device] }}>
+      <ScaledFrame key={frameKey} src={src} width={WIDTHS[device]} title="Generated site preview" />
     </div>
   );
 
@@ -68,7 +70,7 @@ export default function SiteView({ site, previewUrl }: { site: SiteMeta; preview
           <div className="compare">
             <figure>
               <figcaption>Original ({new URL(site.url).hostname})</figcaption>
-              <div className="shot" style={{ width: device === "desktop" ? "100%" : WIDTHS.mobile }}>
+              <div className="shot" style={{ maxWidth: device === "desktop" ? "100%" : WIDTHS.mobile }}>
                 <img src={`/data/${site.id}/${device === "desktop" ? "original.jpg" : "original-mobile.jpg"}`} alt="Screenshot of the original website" />
               </div>
             </figure>

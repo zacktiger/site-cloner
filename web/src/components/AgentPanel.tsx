@@ -24,7 +24,15 @@ function stepState(site: SiteMeta, stages: Stage[]) {
   return ORDER.indexOf(site.stage) > ORDER.indexOf(stages[0]) ? "done" : "pending";
 }
 
-export default function AgentPanel({ site, onUpdate }: { site: SiteMeta; onUpdate: (meta: SiteMeta) => void }) {
+export default function AgentPanel({
+  site,
+  onUpdate,
+  onDelete,
+}: {
+  site: SiteMeta;
+  onUpdate: (meta: SiteMeta) => void;
+  onDelete: () => void;
+}) {
   const [instruction, setInstruction] = useState("");
   const [error, setError] = useState("");
 
@@ -57,7 +65,16 @@ export default function AgentPanel({ site, onUpdate }: { site: SiteMeta; onUpdat
           <h2>Agent</h2>
           <span className={`status status-${site.status}`}>{running ? (site.stage === "modify" ? "Editing" : "Working") : site.status === "ready" ? "Ready" : "Failed"}</span>
         </header>
-        <a className="source-url" href={site.url} target="_blank" rel="noreferrer">{site.url}</a>
+        <div className="source-row">
+          <a className="source-url" href={site.url} target="_blank" rel="noreferrer">{site.url}</a>
+          <button
+            className="ghost small"
+            disabled={running}
+            onClick={() => api.remove(site.id).then(onDelete, (err: Error) => setError(err.message))}
+          >
+            Delete
+          </button>
+        </div>
         <ol className="steps">
           {STEPS.map((step) => (
             <li key={step.label} className={`step step-${stepState(site, step.stages)}`}>

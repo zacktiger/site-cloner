@@ -100,7 +100,19 @@ export default function App() {
         )}
       </main>
 
-      <aside className="panel">{site && <AgentPanel site={site} onUpdate={follow} />}</aside>
+      <aside className="panel">
+        {site && (
+          <AgentPanel
+            site={site}
+            onUpdate={follow}
+            onDelete={() => {
+              setSelectedId(null);
+              history.replaceState(null, "", location.pathname);
+              loadSites();
+            }}
+          />
+        )}
+      </aside>
     </div>
   );
 }

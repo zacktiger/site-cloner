@@ -77,4 +77,5 @@ export const api = {
   modify: (id: string, instruction: string) =>
     request<SiteMeta>(`/api/sites/${id}/modify`, { method: "POST", body: JSON.stringify({ instruction }) }),
   undo: (id: string) => request<SiteMeta>(`/api/sites/${id}/undo`, { method: "POST" }),
+  remove: (id: string) => request<{ ok: boolean }>(`/api/sites/${id}`, { method: "DELETE" }),
 };

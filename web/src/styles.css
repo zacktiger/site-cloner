@@ -385,6 +385,7 @@ pre {
 }
 
 .device {
+  width: 100%;
   margin: 0 auto;
   height: 100%;
   min-height: 480px;
@@ -395,22 +396,32 @@ pre {
   transition: width 0.25s ease;
 }
 
-.device iframe {
-  display: block;
+.scaled-frame {
+  position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+
+/* Absolutely positioned, so its real (unscaled) width never stretches the layout. */
+.scaled-frame iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
   border: 0;
+  transform-origin: top left;
 }
 
 .compare {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
   height: 100%;
 }
 
 .compare figure {
   margin: 0;
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -429,6 +440,7 @@ pre {
 }
 
 .shot {
+  width: 100%;
   margin: 0 auto;
   overflow-y: auto;
   border: 1px solid var(--line);
@@ -681,7 +693,16 @@ details[open] > summary.card-head {
   background: var(--red-soft);
 }
 
+.source-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
 .source-url {
+  flex: 1;
+  min-width: 0;
   display: block;
   font-family: var(--mono);
   font-size: 12px;
@@ -689,7 +710,6 @@ details[open] > summary.card-head {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-bottom: 10px;
 }
 
 /* The pipeline really is a sequence, so the steps are drawn as one. */
