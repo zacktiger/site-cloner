@@ -57,6 +57,16 @@ export async function getBrowser() {
   return browser;
 }
 
+// Playwright's navigation errors are long and technical; say what went wrong in one sentence.
+function explainLoadError(message: string) {
+  const code = message.match(/net::(ERR_[A-Z_]+)/)?.[1];
+  if (code === "ERR_NAME_NOT_RESOLVED") return "This domain does not exist (DNS lookup failed). Check the URL.";
+  if (code === "ERR_CONNECTION_REFUSED" || code === "ERR_CONNECTION_RESET") return `The server refused the connection (${code}).`;
+  if (code?.startsWith("ERR_CERT")) return `The site's HTTPS certificate is invalid (${code}).`;
+  if (/Timeout/i.test(message)) return "The page took longer than 45 seconds to load.";
+  return `Could not open the page: ${message.split("\n")[0]}`;
+}
+
 async function openPage(url: string, mobile: boolean): Promise<Page> {
   const context = await (await getBrowser()).newContext({
     viewport: mobile ? MOBILE : DESKTOP,
@@ -66,7 +76,10 @@ async function openPage(url: string, mobile: boolean): Promise<Page> {
     locale: "en-US",
   });
   const page = await context.newPage();
-  const res = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45_000 });
+  const res = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45_000 }).catch((e: Error) => {
+    void context.close();
+    throw new Error(explainLoadError(e.message));
+  });
   if (res && res.status() >= 400) throw new Error(`The website answered with HTTP ${res.status()}`);
   // Many sites keep polling forever, so "network idle" is a best effort, not a requirement.
   await page.waitForLoadState("networkidle", { timeout: 10_000 }).catch(() => {});
