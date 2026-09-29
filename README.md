@@ -20,6 +20,10 @@ npm run dev                # starts everything
 
 Open **http://localhost:5173**, paste a URL and press **Clone site**.
 
+A free-tier key works, but Google allows only about 20 requests per model per day on it, and free-tier
+calls are the first to get "model overloaded" errors. A clone uses 3–5 requests and an edit 1–2, so
+for a demo a key with billing enabled is much smoother (and costs cents).
+
 `npm run dev` starts three processes:
 
 | Port | Process | Role |
@@ -52,7 +56,7 @@ flowchart LR
     end
 
     R --> P([Live preview<br/>desktop / tablet / mobile])
-    P --> M["5. Modify<br/>snapshot → Gemini edits files<br/>→ validate/fix → roll back if broken"]
+    P --> M["6. Modify<br/>snapshot → Gemini edits files<br/>→ validate/fix → roll back if broken"]
     M --> V
 ```
 
@@ -128,8 +132,9 @@ snapshot, so a bad edit never leaves a broken site. **Undo** restores the previo
   screenshots, because compiling code can still be a broken page.
 - **Resilient model access.** Gemini's newest Flash models often return 503 ("high demand"). Calls
   retry with backoff, then fall back through `gemini-3.8-flash` → `gemini-3.5-flash` →
-  `gemini-2.5-flash`. An overloaded model is skipped for 5 minutes. Responses are streamed, so long
-  generations don't hit HTTP timeouts.
+  `gemini-2.5-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite`. An out-of-quota (429) model
+  is skipped at once, and an unavailable model is skipped for 5 minutes. Responses are streamed, so
+  long generations don't hit HTTP timeouts.
 - **One shared preview server.** Every generated site is a folder inside one Vite project and reuses
   its `node_modules`, so a new clone needs no `npm install` and appears in the preview instantly.
   Vite's hot reload shows each modification live.
@@ -147,7 +152,12 @@ snapshot, so a bad edit never leaves a broken site. **Undo** restores the previo
   only for generation and the visual review.
 - Fix calls send only the files named in the errors. Edit calls put the unchanged code first and the
   instruction last, so Gemini's implicit prompt caching can reuse the prefix across edits.
-- Every call's tokens, time and cost are recorded and shown in the UI.
+- Every call's tokens, time and cost are recorded and shown in the UI. (The shown cost ignores the
+  discount on cached tokens, so it is an upper bound.)
+
+Measured on linear.app, notion.com and stripe.com: a clone takes 3–5 model calls and costs
+**$0.05–0.10**. An edit such as "change the primary color to blue" takes one call, 2–5 seconds and
+about **$0.005**.
 
 ## Limitations
 
