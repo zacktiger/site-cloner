@@ -19,7 +19,8 @@ import { validateSite } from "./validate.js";
 //           -> visual review -> validate/fix loop (roll back the review if it broke something)
 //   modify: snapshot -> edit with AI -> validate/fix loop -> (roll back if still broken)
 
-const message = (e: unknown) => (e instanceof Error ? e.message : String(e));
+// First line only, and not too long: some library errors carry pages of logs.
+const message = (e: unknown) => (e instanceof Error ? e.message : String(e)).split("\n")[0].slice(0, 400);
 
 // Validate, and if something is wrong, fix it: first missing imports in code (free),
 // then whatever is left with the model. At most MAX_FIX_ATTEMPTS model rounds.

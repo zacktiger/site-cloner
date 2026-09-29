@@ -53,7 +53,16 @@ const EXTRACT_SCRIPT = fs.readFileSync(
 
 let browser: Browser | null = null;
 export async function getBrowser() {
-  if (!browser?.isConnected()) browser = await chromium.launch();
+  if (!browser?.isConnected()) {
+    browser = await chromium.launch().catch((e: Error) => {
+      const exitCode = e.message.match(/exitCode=(-?\d+)/)?.[1];
+      throw new Error(
+        `The headless browser could not start${exitCode ? ` (exit code ${exitCode})` : ""}. ` +
+          "Stop every running copy of the app, start `npm run dev` again from a terminal, and retry. " +
+          "If it still fails, run `npx --prefix server playwright install chromium`.",
+      );
+    });
+  }
   return browser;
 }
 
