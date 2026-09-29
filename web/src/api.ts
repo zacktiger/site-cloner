@@ -59,10 +59,17 @@ export interface Config {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
-    ...init,
-    headers: { "Content-Type": "application/json" },
-  });
+  let res: Response;
+  try {
+    res = await fetch(path, { ...init, headers: { "Content-Type": "application/json" } });
+  } catch {
+    // fetch only throws when the request never got an answer: the agent server is down.
+    throw new Error("Can't reach the agent server. Check that `npm run dev` is running, then try again.");
+  }
+  if (res.status === 502 || res.status === 504) {
+    // Vite's proxy answers this way when nothing is listening on port 3001.
+    throw new Error("The agent server is not running. Start it with `npm run dev`, then try again.");
+  }
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(body.error ?? `Request failed with ${res.status}`);
   return body as T;

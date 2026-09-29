@@ -45,15 +45,30 @@ function useSite(id: string | null) {
 
 export default function App() {
   const [config, setConfig] = useState<Config | null>(null);
+  const [serverError, setServerError] = useState("");
   const [sites, setSites] = useState<SiteSummary[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(idFromHash());
   const { site, follow } = useSite(selectedId);
 
   const loadSites = useCallback(() => api.listSites().then(setSites).catch(() => {}), []);
 
+  // Load the config; if the agent server is down, say so and keep checking until it is back.
   useEffect(() => {
-    api.config().then(setConfig).catch(() => {});
-    loadSites();
+    let timer: number;
+    const connect = () =>
+      api
+        .config()
+        .then((c) => {
+          setConfig(c);
+          setServerError("");
+          loadSites();
+        })
+        .catch((err: Error) => {
+          setServerError(err.message);
+          timer = window.setTimeout(connect, 3000);
+        });
+    connect();
+    return () => clearTimeout(timer);
   }, [loadSites]);
 
   // Keep the sidebar's status dots in sync with the selected site.
@@ -86,6 +101,11 @@ export default function App() {
       <Sidebar sites={sites} selectedId={selectedId} onSelect={select} />
 
       <main className="stage">
+        {serverError && (
+          <p className="banner" role="alert">
+            {serverError} Retrying every few seconds…
+          </p>
+        )}
         {site && config ? (
           <SiteView site={site} previewUrl={config.previewUrl} />
         ) : (

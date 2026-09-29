@@ -285,6 +285,15 @@ pre {
   flex-direction: column;
 }
 
+.banner {
+  margin: 16px 16px 0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: var(--red-soft);
+  color: var(--red);
+  font-weight: 500;
+}
+
 .empty {
   margin: auto;
   max-width: 540px;
