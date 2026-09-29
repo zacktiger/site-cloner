@@ -32,6 +32,10 @@ for a demo a key with billing enabled is much smoother (and costs cents).
 | 3001 | `server/` | The agent and its HTTP API |
 | 5174 | `preview/` | One Vite server that hosts every generated site at `/<site-id>/` |
 
+If `npm run dev` stops with "ports are already in use", an earlier copy is still running; the message
+prints a one-line command to stop it. If the UI shows "Can't reach the agent server", restart
+`npm run dev`.
+
 Generated code is written to `preview/sites/<site-id>/src/`. Agent state (screenshots, analysis, logs,
 token usage, undo snapshots) is in `data/<site-id>/`.
 
