@@ -9,21 +9,24 @@ import { formatFiles, parseModelOutput, readSourceFiles, restore, snapshot, writ
 import { fixErrors, generateCode } from "./generate.js";
 import { callModel, textPart, ThinkingLevel } from "./llm.js";
 import { MODIFY_SYSTEM } from "./prompts.js";
+import { reviewVisuals } from "./review.js";
 import { scaffoldSite } from "./scaffold.js";
 import { validateSite } from "./validate.js";
 
 // The agent's control flow. Each step is a plain function call:
 //
 //   clone:  capture -> analyze -> scaffold -> generate -> validate/fix loop
+//           -> visual review -> validate/fix loop (roll back the review if it broke something)
 //   modify: snapshot -> edit with AI -> validate/fix loop -> (roll back if still broken)
 
 const message = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
 // Validate, and if something is wrong, fix it: first missing imports in code (free),
 // then whatever is left with the model. At most MAX_FIX_ATTEMPTS model rounds.
-async function validateAndFix(job: Job): Promise<boolean> {
+// showStages: false keeps the current stage (review, modify) visible in the UI.
+async function validateAndFix(job: Job, showStages = true): Promise<boolean> {
   for (let attempt = 0; ; attempt++) {
-    job.stage("validate");
+    if (showStages) job.stage("validate");
     let errors = await validateSite(job.id);
     const autoFixes = errors.length ? autoFixImports(job.id, errors) : [];
     if (autoFixes.length) {
@@ -37,7 +40,7 @@ async function validateAndFix(job: Job): Promise<boolean> {
     }
     job.log(`Validation found ${errors.length} problem(s). First: ${errors[0].split("\n")[0].slice(0, 200)}`);
     if (attempt >= MAX_FIX_ATTEMPTS) return false;
-    job.stage("fix");
+    if (showStages) job.stage("fix");
     job.log(`Asking the model to fix them (attempt ${attempt + 1}/${MAX_FIX_ATTEMPTS})`);
     await fixErrors(job, errors);
   }
@@ -71,6 +74,7 @@ export async function runClone(id: string, url: string) {
     await generateCode(job, capture, screenshots, spec);
 
     const ok = await validateAndFix(job);
+    if (ok) await reviewStep(job, screenshots.desktopSlices);
     updateMeta(id, (m) => {
       m.status = "ready";
       m.stage = "done";
@@ -83,6 +87,24 @@ export async function runClone(id: string, url: string) {
       m.status = "failed";
       m.error = message(e);
     });
+  }
+}
+
+// The visual review is an improvement on a site that already works. If its changes
+// cannot be validated, the site goes back to the working version from before the review.
+async function reviewStep(job: Job, originalSlices: Buffer[]) {
+  job.stage("review");
+  job.log("Comparing the clone with the original screenshots");
+  const version = readMeta(job.id)!.versions + 1;
+  snapshot(job.id, version);
+  updateMeta(job.id, (m) => (m.versions = version));
+  try {
+    const changed = await reviewVisuals(job, originalSlices);
+    if (changed && !(await validateAndFix(job, false))) throw new Error("its changes did not pass validation");
+  } catch (e) {
+    restore(job.id, version);
+    updateMeta(job.id, (m) => (m.validationErrors = []));
+    job.log(`Visual review rolled back: ${message(e)}`);
   }
 }
 
@@ -123,7 +145,7 @@ export async function runModify(id: string, instruction: string) {
     writeSourceFiles(id, changed, deletes);
     job.log(`Changed ${[...changed.map((f) => f.path), ...deletes.map((d) => `${d} (deleted)`)].join(", ")}`);
 
-    if (!(await validateAndFix(job))) {
+    if (!(await validateAndFix(job, false))) {
       throw new Error("The change broke the site and could not be fixed automatically");
     }
     finish("applied", summary ?? "Change applied");

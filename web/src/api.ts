@@ -1,6 +1,6 @@
 // Types mirror server/src/store.ts and server/src/agent/analyze.ts.
 
-export type Stage = "capture" | "analyze" | "generate" | "validate" | "fix" | "modify" | "done";
+export type Stage = "capture" | "analyze" | "generate" | "validate" | "fix" | "review" | "modify" | "done";
 
 export interface LlmCall {
   step: string;

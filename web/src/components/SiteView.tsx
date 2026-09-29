@@ -20,7 +20,7 @@ export default function SiteView({ site, previewUrl }: { site: SiteMeta; preview
   const [reloads, setReloads] = useState(0);
 
   const src = `${previewUrl}/${site.id}/`;
-  const hasCode = ["validate", "fix", "done", "modify"].includes(site.stage) && !!site.analysis;
+  const hasCode = ["validate", "fix", "review", "done", "modify"].includes(site.stage) && !!site.analysis;
   // Remount the iframe whenever a job finishes, so the preview always shows the latest code.
   const frameKey = `${site.status}-${site.changes.map((c) => c.status).join()}-${reloads}`;
 

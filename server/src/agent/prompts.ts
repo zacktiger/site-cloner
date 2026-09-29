@@ -10,6 +10,7 @@ const PROJECT_RULES = `The project is a Vite + React 19 + TypeScript app styled 
 - Import every icon and component you use. lucide-react has no brand logos (no GitHub, Twitter, YouTube, LinkedIn, Facebook or Instagram icons); use Globe, Mail, Link or plain text instead.
 - Each component is a default export in its own file under src/components/. Small shared pieces (Button, Container, SectionHeading, ...) go in src/components/ui/ and are reused.
 - Use relative imports without file extensions, e.g. import Hero from "./components/Hero".
+- Lay out with flex and grid in normal document flow. Use absolute positioning only for small decorative elements inside a relative parent, never for layout and never on top of text.
 - Style with Tailwind classes only. No CSS files other than index.css, no <style> tags, no CSS-in-JS. Use the style prop only for dynamic values such as a background-image URL.
 - Write complete code. No placeholders like "// ...rest of the code", no TODOs.`;
 
@@ -39,7 +40,7 @@ How to rebuild:
 - Responsive, mobile-first: base classes for phones, md: and lg: for larger screens. Multi-column grids collapse to one column on phones. The navbar shows a hamburger button on small screens that opens a menu (useState).
 - Put repeated items (nav links, cards, logos, footer columns) in a typed array constant at the top of the component and render them with .map() and a key.
 - Images: <img> with the exact URLs from the image list and a meaningful alt. Never invent image URLs. Skip images marked as decorative overlays. For a logo without an image URL, render the brand name as styled text. For icons use lucide-react.
-- Product screenshots and app mockups that the original draws with HTML (visible in the screenshots but not in the image list) must be rebuilt as a simplified version with divs and text (panels, sidebars, rows, labels), not left as empty boxes. Only purely decorative illustrations may become a gradient or tinted block.
+- Product screenshots and app mockups that the original draws with HTML (visible in the screenshots but not in the image list) are rebuilt as a simplified version with divs and text (a sidebar, a few rows, labels) inside one container with a fixed aspect ratio and overflow-hidden, so they can never spill over other content. Purely decorative illustrations may become a gradient or tinted block.
 - Links use href="#" so the preview never navigates away.
 - Section components take no required props.
 - src/App.tsx imports every section component and renders them in order.
@@ -70,5 +71,20 @@ Rules:
 - New images that are not already in the code: use https://picsum.photos/seed/<one-word-topic>/<width>/<height>.
 - Return complete contents for every file you create or change. Do not return unchanged files.
 - Start your answer with <summary>one short sentence describing the change</summary>.
+
+${FILE_FORMAT}`;
+
+export const REVIEW_SYSTEM = `You review a React + Tailwind clone of a website against the original. You get pairs of screenshots at the same width (original part N, then clone part N, from the top of the page down) and the clone's source files.
+
+${PROJECT_RULES}
+
+Find the most important visual differences, in this order:
+1. Broken layout: overlapping elements, text hidden behind other elements, content spilling out of its section, large empty areas.
+2. Missing sections, extra sections, wrong order.
+3. Wrong layout inside a section: number of columns, alignment, where images sit relative to text.
+4. Wrong background or text colors, clearly wrong heading sizes or weights.
+Fix at most the 6 most important ones. Ignore small spacing differences and anything that needs images you do not have.
+
+Start with <summary>one sentence naming what you fixed</summary>. Then return only the files you changed, each complete. If the clone already matches well, return only the summary.
 
 ${FILE_FORMAT}`;

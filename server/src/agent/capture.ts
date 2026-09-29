@@ -89,6 +89,27 @@ async function scrollThrough(page: Page) {
   await page.waitForTimeout(800);
 }
 
+// The top of the page as tall slices (max MAX_SLICES), used for the original and the clone alike.
+async function takeSlices(page: Page): Promise<Buffer[]> {
+  const height = Math.min((await page.evaluate("document.documentElement.scrollHeight")) as number, 16_000);
+  const slices: Buffer[] = [];
+  for (let y = 0; y < height && slices.length < MAX_SLICES; y += SLICE_HEIGHT) {
+    const clip = { x: 0, y, width: DESKTOP.width, height: Math.min(SLICE_HEIGHT, height - y) };
+    slices.push(await page.screenshot({ clip, fullPage: true, type: "jpeg", quality: 70, animations: "disabled" }));
+  }
+  return slices;
+}
+
+// Screenshots of a generated site, taken exactly like the original's, for the visual review.
+export async function screenshotSlices(url: string): Promise<Buffer[]> {
+  const page = await openPage(url, false);
+  try {
+    return await takeSlices(page);
+  } finally {
+    await page.context().close();
+  }
+}
+
 const BLOCKED_TITLES = /just a moment|attention required|access denied|verify you are human|captcha/i;
 
 export async function captureWebsite(url: string): Promise<{ capture: Capture; screenshots: Screenshots }> {
@@ -109,12 +130,7 @@ export async function captureWebsite(url: string): Promise<{ capture: Capture; s
       throw new Error("The page rendered almost nothing (it may need a login or block headless browsers)");
     }
 
-    const height = Math.min(facts.pageHeight, 16_000);
-    const desktopSlices: Buffer[] = [];
-    for (let y = 0; y < height && desktopSlices.length < MAX_SLICES; y += SLICE_HEIGHT) {
-      const clip = { x: 0, y, width: DESKTOP.width, height: Math.min(SLICE_HEIGHT, height - y) };
-      desktopSlices.push(await desktop.screenshot({ clip, fullPage: true, type: "jpeg", quality: 70, animations: "disabled" }));
-    }
+    const desktopSlices = await takeSlices(desktop);
     const fullPage = await desktop.screenshot({ fullPage: true, type: "jpeg", quality: 60, animations: "disabled" });
     const mobileHeight = await mobile.evaluate(() => document.documentElement.scrollHeight);
     const mobileShot = await mobile.screenshot({

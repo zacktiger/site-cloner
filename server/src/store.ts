@@ -7,7 +7,7 @@ import type { SiteSpec } from "./agent/analyze.js";
 // No database: the file system is enough for a local, single-user tool.
 
 // The step the agent is on. When a job fails, the stage stays where it failed.
-export type Stage = "capture" | "analyze" | "generate" | "validate" | "fix" | "modify" | "done";
+export type Stage = "capture" | "analyze" | "generate" | "validate" | "fix" | "review" | "modify" | "done";
 
 export interface LlmCall {
   step: string;

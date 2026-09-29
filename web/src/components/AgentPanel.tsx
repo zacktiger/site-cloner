@@ -6,8 +6,9 @@ const STEPS: { label: string; stages: Stage[] }[] = [
   { label: "Analyze layout and design", stages: ["analyze"] },
   { label: "Generate React components", stages: ["generate"] },
   { label: "Validate and fix errors", stages: ["validate", "fix"] },
+  { label: "Compare with the original", stages: ["review"] },
 ];
-const ORDER: Stage[] = ["capture", "analyze", "generate", "validate", "fix", "done"];
+const ORDER: Stage[] = ["capture", "analyze", "generate", "validate", "fix", "review", "done"];
 
 const EXAMPLES = [
   "Change the primary color to blue",
