@@ -43,12 +43,15 @@ flowchart LR
         S["Scaffold<br/>index.html, main.tsx, theme CSS<br/>(no AI)"]
         G["3. Generate<br/>Gemini writes App.tsx +<br/>one component per section"]
         V{"4. Validate<br/>tsc type check +<br/>headless render check"}
-        F["Fix<br/>errors + affected files<br/>back to Gemini"]
+        F["Fix<br/>missing imports in code,<br/>the rest by Gemini"]
+        R["5. Visual review<br/>screenshot the clone,<br/>compare with original,<br/>Gemini fixes differences"]
         C --> A --> S --> G --> V
         V -- errors, max 2 rounds --> F --> V
+        V -- clean --> R
+        R -- re-validate, roll back if broken --> V
     end
 
-    V -- clean --> P([Live preview<br/>desktop / tablet / mobile])
+    R --> P([Live preview<br/>desktop / tablet / mobile])
     P --> M["5. Modify<br/>snapshot → Gemini edits files<br/>→ validate/fix → roll back if broken"]
     M --> V
 ```
@@ -74,13 +77,20 @@ Fonts link, `main.tsx`, and `index.css`, which turns the tokens into Tailwind th
 shared UI pieces in `components/ui/`. It gets the screenshots (for appearance), the outline (for exact
 text and image URLs) and the plan (for structure).
 
-**4. Validate and fix** (`validate.ts`). Two checks. First `tsc --noEmit` catches missing imports,
-wrong props and syntax errors, with exact file and line. Then headless Chrome loads the site through
-the preview server and catches crashes during render, modules Vite cannot compile, and a blank page.
-If either check fails, the errors and the files they mention go back to Gemini, which returns
-corrected files. This repeats at most twice.
+**4. Validate and fix** (`validate.ts`, `autofix.ts`). Static checks come first. `tsc --noEmit`
+catches missing imports, wrong props and syntax errors, with exact file and line, and a separate check
+confirms the theme block in `index.css` is intact. Then headless Chrome loads the site through the
+preview server and catches crashes during render, modules Vite cannot compile, images that fail to
+load, and a blank page. The most common errors (a used icon or component that was never imported, a
+lucide icon that doesn't exist) are fixed **in code, without a model call**. What remains goes back to
+Gemini with the affected files. This repeats at most twice.
 
-**5. Modify** (`pipeline.ts`). The current source files and the instruction go to Gemini, which
+**5. Visual review** (`review.ts`). Working code can still look wrong, for example with overlapping
+elements or a missing section. The agent screenshots its own clone exactly the way it captured the
+original, shows Gemini each original/clone pair, and applies the fixes it returns. The site is
+snapshotted first; if the reviewed version doesn't pass validation, it is rolled back.
+
+**6. Modify** (`pipeline.ts`). The current source files and the instruction go to Gemini, which
 returns only the files it changed (or deletes). Before writing, the agent snapshots the site. After
 writing, it runs the same validate/fix loop. If the site is still broken, the agent rolls back to the
 snapshot, so a bad edit never leaves a broken site. **Undo** restores the previous snapshot.
@@ -112,6 +122,14 @@ snapshot, so a bad edit never leaves a broken site. **Undo** restores the previo
   Escaping thousands of lines of JSX inside a JSON string is where models make the most mistakes.
 - **Two-layer validation.** The type check is fast (under a second) and points to exact lines. The
   browser check catches what only fails at runtime. Fix prompts include only the affected files.
+- **Code fixes before model fixes.** Missing imports are the most common error in generated code.
+  Fixing them in code is instant, free and always right, so the model only sees what is left.
+- **The agent checks how its output looks, not just whether it runs.** The visual review compares
+  screenshots, because compiling code can still be a broken page.
+- **Resilient model access.** Gemini's newest Flash models often return 503 ("high demand"). Calls
+  retry with backoff, then fall back through `gemini-3.8-flash` → `gemini-3.5-flash` →
+  `gemini-2.5-flash`. An overloaded model is skipped for 5 minutes. Responses are streamed, so long
+  generations don't hit HTTP timeouts.
 - **One shared preview server.** Every generated site is a folder inside one Vite project and reuses
   its `node_modules`, so a new clone needs no `npm install` and appears in the preview instantly.
   Vite's hot reload shows each modification live.
@@ -125,8 +143,8 @@ snapshot, so a bad edit never leaves a broken site. **Undo** restores the previo
   long page.
 - The outline's line budget is spread over the page height, so one dense section cannot crowd out the
   rest of the page.
-- A Flash-class model is used, with thinking set to low for analysis, fixes and edits and to medium only
-  for the main generation.
+- A Flash-class model is used, with thinking set to low for analysis, fixes and edits and to medium
+  only for generation and the visual review.
 - Fix calls send only the files named in the errors. Edit calls put the unchanged code first and the
   instruction last, so Gemini's implicit prompt caching can reuse the prefix across edits.
 - Every call's tokens, time and cost are recorded and shown in the UI.
@@ -144,6 +162,8 @@ snapshot, so a bad edit never leaves a broken site. **Undo** restores the previo
   styled text, icons or placeholders.
 - **Animations, carousels, dropdown menus and other interactions** are recreated only when simple.
 - **One page per clone.** Links do not lead to rebuilt subpages.
-- **Visual accuracy is checked by eye.** The validator checks that the code works, not how close it
-  looks to the original.
+- **Visual accuracy is judged by the model, not measured.** The review step compares screenshots, but
+  there is no numeric similarity score, and it runs once.
+- **Output quality depends on which model answers.** When the preferred model is overloaded, a
+  fallback model does the work, and results vary between runs.
 - Jobs run inside the server process. Restarting the server interrupts a running job.
